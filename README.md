@@ -4,7 +4,6 @@
 
 Mechablox Connect adalah bridge + browser extension untuk mengendalikan Roblox Studio langsung dari chat AI di HP. Buka Gemini di HP, ketik perintah, Studio di PC jalan.
 
-![Bridge](assets/banner.png)
 
 ## Fitur
 - Read/edit scripts, run Luau, generate assets, control play-test dari chat
