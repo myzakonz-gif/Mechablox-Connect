@@ -25,7 +25,7 @@ python bridge.py  # listening on ws://0.0.0.0:17613
 
 **HP:**
 1. Install **Lemur Browser** (Play Store)
-2. Kirim folder `zeroscript-extension` ke HP, di Lemur: `:` -> Extensions -> Developer mode ON -> Load unpacked
+2. Kirim folder `mechablox-extension` ke HP, di Lemur: `:` -> Extensions -> Developer mode ON -> Load unpacked
 3. Buka `gemini.google.com`, puzzle icon -> Mechablox Connect -> Bridge URL: `ws://192.168.1.xx:17613` -> Save & Reconnect
 4. Dot hijau = `Connected · Roblox Studio ready` -> `Start session`
 

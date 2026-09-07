@@ -1,11 +1,11 @@
 # OPSI 1 - HP ke PC Satu WiFi (Tanpa Tunnel, 3 Menit)
 
 ## Di PC (Windows)
-1. Extract `ZeroScript-Free-Remote.zip` (sudah patch 1.5.4-remote)
+1. Extract `Mechablox Connect-Free-Remote.zip` (sudah patch 1.5.4-remote)
    - Jangan pakai zip lama dari Releases
 
 2. Buka CMD / PowerShell di folder extract, allow firewall sekali:
-   netsh advfirewall firewall add rule name="ZeroScript Bridge" dir=in action=allow protocol=TCP localport=17613
+   netsh advfirewall firewall add rule name="Mechablox Connect Bridge" dir=in action=allow protocol=TCP localport=17613
 
 3. Cek IP PC:
    ipconfig
@@ -25,13 +25,13 @@
 1. Install **Lemur Browser** (Play Store) - pengganti Kiwi yang sudah tidak update.
    Chrome asli Android TIDAK support extension desktop.
 
-2. Kirim folder `zeroscript-extension` dari PC ke HP via USB / Google Drive / Telegram Saved Messages (kirim zip lalu extract di HP pakai ZArchiver)
+2. Kirim folder `mechablox-extension` dari PC ke HP via USB / Google Drive / Telegram Saved Messages (kirim zip lalu extract di HP pakai ZArchiver)
 
-3. Di Lemur HP: Menu : -> Extensions -> Developer mode ON -> Load unpacked -> pilih folder `zeroscript-extension` (yang ada manifest.json)
+3. Di Lemur HP: Menu : -> Extensions -> Developer mode ON -> Load unpacked -> pilih folder `mechablox-extension` (yang ada manifest.json)
 
 4. Buka `gemini.google.com` di Lemur, login akun sama.
 
-5. Klik icon puzzle (Extension) -> ZeroScript -> di card "Bridge URL" isi:
+5. Klik icon puzzle (Extension) -> Mechablox Connect -> di card "Bridge URL" isi:
    ws://192.168.1.15:17613
    (ganti 192.168.1.15 dengan IP PC kamu dari ipconfig tadi)
    Klik Save & Reconnect
