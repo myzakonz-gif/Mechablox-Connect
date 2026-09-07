@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { width: 280px; margin: 0; font-family: "Segoe UI", sans-serif; background: #16161a; color: #e8e8ec; }
+    .wrap { padding: 14px; }
+    h1 { font-size: 14px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+    .ver { font-size: 9.5px; font-weight: 500; letter-spacing: 0.2px; color: rgba(255,255,255,0.55); background: none; border: none; padding: 0; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: #6b7280; flex-shrink:0 }
+    .dot.on { background: #34d399; box-shadow: 0 0 8px #34d399; }
+    .dot.warn { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; }
+    .row { font-size: 12px; opacity: 0.85; margin: 6px 0; word-break: break-all; }
+    .small { font-size: 10px; opacity: 0.6; }
+    button { width: 100%; margin-top: 8px; padding: 8px; border: 0; border-radius: 8px; cursor: pointer; font-size: 12px; }
+    .ghost { background: rgba(255,255,255,0.08); color: #e8e8ec; }
+    .primary { background: #4f46e5; color: white; font-weight: 600; }
+    .kofi { background: rgba(255,105,135,.16); color: #ff8fa3; border: 1px solid rgba(255,105,135,.4) !important; font-weight: 700; }
+    input { width: 100%; box-sizing: border-box; padding: 7px 8px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color:#e8e8ec; font-size: 11px; font-family: ui-monospace, monospace; }
+    input::placeholder { color: rgba(255,255,255,0.4); }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 10px; margin-top: 10px; }
+    .card h3 { margin:0 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; opacity: .7; }
+    .help { font-size: 10px; opacity: .55; line-height: 1.4; margin-top: 6px; }
+    code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1><span id="dot" class="dot"></span> ZeroScript <span id="ver" class="ver"></span> <span style="font-size:9px;opacity:.6">Remote</span></h1>
+    <div class="row" id="state">Bridge: …</div>
+    <div class="row small" id="bridgeUrl">URL: …</div>
+    <div class="row" id="tools"></div>
+    <div class="row" id="servers" style="white-space:pre-line; font-family:ui-monospace,monospace; opacity:0.75; font-size:10px"></div>
+
+    <div class="card" id="remoteCard">
+      <h3>🌐 Bridge URL (HP → PC)</h3>
+      <input id="bridgeInput" placeholder="ws://192.168.1.15:17613" spellcheck="false" />
+      <div style="display:flex; gap:6px; margin-top:6px">
+        <button class="primary" id="saveUrl" style="margin-top:0; flex:1">Save & Reconnect</button>
+        <button class="ghost" id="resetUrl" style="margin-top:0; width:auto; padding:8px 10px">Reset</button>
+      </div>
+      <div class="help" id="urlHelp"></div>
+      <div class="help">
+        Opsi 1 LAN: <code>ws://192.168.1.xx:17613</code><br>
+        Tailscale: <code>ws://100.xx.xx.xx:17613</code><br>
+        Tunnel: <code>wss://xxx.trycloudflare.com</code> + <code>?token=xxx</code> jika pakai ZS_BRIDGE_TOKEN
+      </div>
+    </div>
+
+    <button class="ghost" id="reconnect">↻ Reconnect bridge</button>
+    <button class="ghost" id="restart">⟳ Restart Roblox server</button>
+    <button class="ghost" id="settings">⚙ Settings (buka AI chat)</button>
+    <button class="kofi" id="kofi">♥ Tip the developer on Ko-fi</button>
+    <div class="row" style="margin-top:10px; opacity:0.6; font-size:10px">
+      PC: jalankan <code>start.bat</code> (host 0.0.0.0). Buka <b>Roblox Studio</b> + enable MCP.
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
