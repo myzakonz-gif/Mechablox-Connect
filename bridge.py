@@ -71,12 +71,12 @@ def _enable_ansi_colors():
         return False
 
 
-HOST = os.environ.get("ZS_BRIDGE_HOST", "0.0.0.0")
+HOST = os.environ.get("MC_BRIDGE_HOST", os.environ.get("ZS_BRIDGE_HOST", "0.0.0.0"))
 # Keep in sync with mechablox-extension/manifest.json "version" - printed at
 # startup so a user's terminal output alone tells us which build they're on.
 BRIDGE_VERSION = "1.5.4"
-PORT = int(os.environ.get("ZS_BRIDGE_PORT", "17613"))
-BRIDGE_TOKEN = os.environ.get("ZS_BRIDGE_TOKEN", "").strip()  # optional: if set, client must send ?token=xxx or {"token":...}
+PORT = int(os.environ.get("MC_BRIDGE_PORT", os.environ.get("ZS_BRIDGE_PORT", "17613")))
+BRIDGE_TOKEN = os.environ.get("MC_BRIDGE_TOKEN", os.environ.get("ZS_BRIDGE_TOKEN", "")).strip()  # optional: if set, client must send ?token=xxx or {"token":...}
 HERE = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(HERE, "config.json")
 
@@ -1352,7 +1352,7 @@ async def handler(ws):
                     raw = await asyncio.wait_for(ws.recv(), timeout=3.0)
                     m = json.loads(raw)
                     if m.get("token") != BRIDGE_TOKEN and m.get("type") != "auth":
-                        await ws.send(json.dumps({"type":"error","error":"invalid token - set ZS_BRIDGE_TOKEN on PC and same token in extension Bridge URL ?token=xxx"}))
+                        await ws.send(json.dumps({"type":"error","error":"invalid token - set MC_BRIDGE_TOKEN (or ZS_BRIDGE_TOKEN) on PC and same token in extension Bridge URL ?token=xxx"}))
                         await ws.close(code=1008)
                         return
                     # if it was auth message, continue handling next message normally - but don't lose it if it was ping/call

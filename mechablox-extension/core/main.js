@@ -79,9 +79,9 @@
   }
 
   // Ko-fi tip link.
-  const KOFI_URL = "https://ko-fi.com/sebattfg";
+  const KOFI_URL = "https://ko-fi.com/myzakonz-gif";
   // GitHub releases page - where users download the Bridge + start.bat.
-  const GITHUB_URL = "https://github.com/sebattfg/Mechablox Connect-Free";
+  const GITHUB_URL = "https://github.com/myzakonz-gif/Mechablox-Connect";
   // Shown in the panel instead of a static "Free" label, so a user's screenshot
   // alone tells us which build they're on for debugging. Pulled from
   // manifest.json (single source of truth) rather than duplicated here.

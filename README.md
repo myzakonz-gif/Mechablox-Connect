@@ -10,7 +10,7 @@ Mechablox Connect adalah bridge + browser extension untuk mengendalikan Roblox S
 - Read/edit scripts, run Luau, generate assets, control play-test dari chat
 - Bridge `ws://0.0.0.0:17613` bisa diakses LAN / Tailscale / Tunnel
 - Extension configurable `Bridge URL` (ganti tanpa rebuild) — `ws://192.168.x.x:17613`, `ws://100.x.x.x:17613`, `wss://xxx.trycloudflare.com`
-- Token auth opsional `ZS_BRIDGE_TOKEN` untuk tunnel publik
+- Token auth opsional `MC_BRIDGE_TOKEN` untuk tunnel publik
 
 ## Opsi Koneksi
 
@@ -38,7 +38,7 @@ PC & HP install Tailscale, login sama. `tailscale ip -4` → `100.x.x.x`, HP isi
 ```bash
 cloudflared tunnel --url http://localhost:17613
 # HP isi wss://xxx.trycloudflare.com
-# pakai token: set ZS_BRIDGE_TOKEN=rahasia123 && python bridge.py -> HP: wss://xxx.trycloudflare.com/?token=rahasia123
+# pakai token: set MC_BRIDGE_TOKEN=rahasia123 && python bridge.py -> HP: wss://xxx.trycloudflare.com/?token=rahasia123
 ```
 
 ## Install Extension di HP
@@ -51,4 +51,4 @@ cloudflared tunnel --url http://localhost:17613
 - `netstat -ano | findstr 17613` cek port
 
 ## License
-GPL-3.0 — Copyright (c) 2026 Mechablox Connect / sebattfg. See LICENSE.
+GPL-3.0 — Copyright (c) 2026 Mechablox Connect. See LICENSE.

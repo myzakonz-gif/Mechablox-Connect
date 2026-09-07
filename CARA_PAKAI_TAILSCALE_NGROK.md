@@ -18,7 +18,7 @@ Di Lemur HP Bridge URL isi: wss://xxx-xxxx.trycloudflare.com
 
 OPSIONAL TOKEN (wajib kalau publik):
 PC sebelum run bridge:
-  set ZS_BRIDGE_TOKEN=rahasia123
+  set MC_BRIDGE_TOKEN=rahasia123
   python bridge.py
 HP Bridge URL: wss://xxx.trycloudflare.com/?token=rahasia123
 Tanpa token, orang yang tau URL ngrok kamu bisa eksekusi Luau apapun di Studio!
