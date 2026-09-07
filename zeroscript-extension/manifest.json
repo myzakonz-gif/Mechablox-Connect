@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ZeroScript Free × Roblox Studio Agent",
-  "version": "1.5.4-remote",
-  "description": "Turn ChatGPT, DeepSeek, Gemini, Kimi, GLM, Qwen, Arena or Meta AI into a Roblox Studio agent that drives Studio through a local bridge. (Remote: HP -> PC)",
+  "name": "Mechablox Connect × Roblox Studio Agent",
+  "version": "1.5.4",
+  "description": "Mechablox Connect - Kontrol Roblox Studio dari HP. Gemini/DeepSeek di HP -> MCP di PC via LAN/Tailscale/Tunnel.",
   "permissions": ["storage"],
   "host_permissions": [
     "https://chat.deepseek.com/*",
@@ -44,7 +44,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "ZeroScript Free",
+    "default_title": "Mechablox Connect",
     "default_icon": {
       "16": "icon.png",
       "48": "icon.png",
