@@ -123,6 +123,26 @@ document.getElementById("autoFind").addEventListener("click", () => {
   });
 });
 
+// 1-Klik Konek Otomatis
+document.getElementById("oneClickConnect").addEventListener("click", () => {
+  const btn = document.getElementById("oneClickConnect");
+  btn.textContent = "🔍 Mencari PC...";
+  btn.disabled = true;
+  document.getElementById("urlHelp").textContent = "Mencari PC di LAN (1-3 detik)...";
+  chrome.runtime.sendMessage({ type: "scan_lan" }, (r) => {
+    btn.textContent = "🔌 Konek Otomatis — Auto Deteksi PC";
+    btn.disabled = false;
+    if (r && r.ok) {
+      document.getElementById("urlHelp").textContent = "✅ Konek otomatis: " + r.url;
+      document.getElementById("urlHelp").style.color = "#22c55e";
+    } else {
+      document.getElementById("urlHelp").textContent = "❌ Tidak nemu PC. Pastikan PC & HP satu WiFi & bridge jalan. Coba lagi atau Scan QR.";
+      document.getElementById("urlHelp").style.color = "#fbbf24";
+    }
+    setTimeout(()=>location.reload(), 900);
+  });
+});
+
 // Scan QR (camera)
 let qrStream = null;
 document.getElementById("scanQr").addEventListener("click", async () => {

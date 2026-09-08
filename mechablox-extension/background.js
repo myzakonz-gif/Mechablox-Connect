@@ -325,16 +325,51 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 chrome.runtime.onStartup.addListener(connect);
 chrome.runtime.onInstalled.addListener(connect);
 connect();
-// Auto-scan on HP if not connected after 3s (easy setup: no manual IP)
-setTimeout(() => {
-  if (!connected && !autoScanning) {
-    console.log("[zs-bg] auto-scan LAN for PC...");
-    chrome.runtime.sendMessage({type:"scan_lan"}, ()=>{});
-    // also trigger via self
-    try {
-      const candidates = ["192.168.1.73","192.168.1.15","192.168.1.100","192.168.0.1"];
-      // fire scan via message to self
-      chrome.runtime.sendMessage({type:"scan_lan"});
-    } catch {}
-  }
-}, 4000);
+
+// 1-KLIK AUTO-DETECT: scan LAN otomatis kalau belum konek (HP tinggal klik Connect)
+let autoScanned = false;
+async function doAutoScan() {
+  if (connected || autoScanning || autoScanned) return;
+  // only auto-scan if still on default URL (user hasn't set custom)
+  const isDefault = URL === DEFAULT_URL || URL.includes("127.0.0.1");
+  if (!isDefault && URL !== DEFAULT_URL) return;
+  autoScanned = true;
+  console.log("[mc-bg] auto-scan LAN for PC (1-klik)...");
+  try {
+    // trigger scan_lan handler directly
+    const candidates = ["192.168.1.73","192.168.1.71","192.168.1.1","192.168.1.15","192.168.1.100","192.168.0.1"];
+    // use same logic as scan_lan but inline to avoid message loop
+    const uniq = [];
+    const bases = ["192.168.1", "192.168.0", "192.168.43", "192.168.18"];
+    const priority = [73,71,1,15,100,254];
+    for (const b of bases) for (const p of priority) uniq.push(`ws://${b}.${p}:${PORT}`);
+    const unique = [...new Set(uniq)].slice(0,60);
+    let found = null;
+    const tryOne = (url) => new Promise(res => {
+      try {
+        const s = new WebSocket(url);
+        const t = setTimeout(() => { try{s.close();}catch{}; res(null); }, 800);
+        s.onopen = () => { clearTimeout(t); try{s.close();}catch{}; res(url); };
+        s.onerror = () => { clearTimeout(t); res(null); };
+      } catch { res(null); }
+    });
+    for (let i=0; i<unique.length; i+=10) {
+      const batch = unique.slice(i,i+10);
+      const results = await Promise.all(batch.map(tryOne));
+      found = results.find(r=>r);
+      if (found) break;
+    }
+    if (found) {
+      console.log("[mc-bg] auto-found PC at", found);
+      await chrome.storage.local.set({ zsBridgeUrl: found });
+      URL = found;
+      try{ if(ws) ws.close(); }catch{}
+      reconnectDelay = RECONNECT_MIN;
+      connect();
+    } else {
+      console.log("[mc-bg] auto-scan tidak nemu PC, user bisa klik Auto Find manual");
+    }
+  } catch(e){ console.log("[mc-bg] auto-scan error", e); }
+}
+setTimeout(doAutoScan, 1800);
+setInterval(() => { if (!connected && !autoScanning) doAutoScan(); }, 8000);
