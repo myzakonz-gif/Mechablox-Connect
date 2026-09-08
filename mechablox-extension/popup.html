@@ -39,11 +39,18 @@
         <button class="primary" id="saveUrl" style="margin-top:0; flex:1">Save & Reconnect</button>
         <button class="ghost" id="resetUrl" style="margin-top:0; width:auto; padding:8px 10px">Reset</button>
       </div>
+      <div style="display:flex; gap:6px; margin-top:6px">
+        <button class="ghost" id="autoFind" style="margin-top:0; flex:1; background:#0ea5e9; color:white">🔍 Auto Find PC</button>
+        <button class="ghost" id="scanQr" style="margin-top:0; flex:1">📷 Scan QR</button>
+      </div>
+      <div id="qrView" style="display:none; margin-top:8px; text-align:center">
+        <video id="qrVideo" style="width:100%; border-radius:8px; background:#000" autoplay muted playsinline></video>
+        <div class="help" style="margin-top:4px">Arahkan kamera ke QR di PC (terminal / qrcode.png)</div>
+        <button class="ghost" id="qrClose" style="margin-top:6px">Tutup Kamera</button>
+      </div>
       <div class="help" id="urlHelp"></div>
       <div class="help">
-        Opsi 1 LAN: <code>ws://192.168.1.xx:17613</code><br>
-        Tailscale: <code>ws://100.xx.xx.xx:17613</code><br>
-        Tunnel: <code>wss://xxx.trycloudflare.com</code> + <code>?token=xxx</code> jika pakai ZS_BRIDGE_TOKEN
+        Auto Find = scan LAN (tanpa ketik IP). Scan QR = scan QR di PC.
       </div>
     </div>
 

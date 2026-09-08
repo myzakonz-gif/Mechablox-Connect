@@ -2058,6 +2058,60 @@ async def main():
 
     async with server_ctx:
         log(f"listening on ws://{HOST}:{PORT}  - load the extension and open a supported AI chat", "cy")
+        # ── Easy setup: show LAN URL + QR for HP ──────────────────────────
+        try:
+            # Find LAN IP (the one HP needs)
+            _lan_ip = None
+            try:
+                import socket as _sk
+                s=_sk.socket(_sk.AF_INET,_sk.SOCK_DGRAM)
+                s.connect(("8.8.8.8",80))
+                _lan_ip=s.getsockname()[0]
+                s.close()
+                if _lan_ip.startswith("127."):
+                    _lan_ip=None
+            except: _lan_ip=None
+            if not _lan_ip:
+                # fallback: hostname
+                try:
+                    import socket as _sk2
+                    _lan_ip=_sk2.gethostbyname(_sk2.gethostname())
+                    if _lan_ip.startswith("127."):
+                        _lan_ip="192.168.1.??"
+                except: _lan_ip="192.168.1.??"
+            _url=f"ws://{_lan_ip}:{PORT}"
+            # Also try token suffix
+            if BRIDGE_TOKEN:
+                _url+=f"?token={BRIDGE_TOKEN}"
+            log(f"HP Bridge URL: {_url}  (HP & PC harus satu WiFi)", "gr")
+            log(f"Di HP Lemur -> puzzle icon -> Mechablox Connect -> Bridge URL -> Save & Reconnect", "cy")
+            # Generate QR code image + ASCII if possible
+            try:
+                import qrcode
+                _qr_path=os.path.join(HERE,"qrcode.png")
+                _qr=qrcode.make(_url)
+                _qr.save(_qr_path)
+                log(f"QR code disimpan: {_qr_path}  (scan di HP, atau ketik manual URL di atas)", "gr")
+                # ASCII QR for terminal (no extra deps)
+                try:
+                    _qr2=qrcode.QRCode(border=1)
+                    _qr2.add_data(_url)
+                    _qr2.make(fit=True)
+                    # print small ascii
+                    _matrix=_qr2.get_matrix()
+                    print()
+                    print(f"  Scan QR ini di HP (atau ketik URL di atas):")
+                    for _row in _matrix:
+                        print("  " + "".join("██" if _c else "  " for _c in _row))
+                    print(f"  {_url}")
+                    print()
+                except: pass
+            except ImportError:
+                log(f"QR: pip install qrcode[pil] untuk QR otomatis (tidak wajib, ketik URL manual juga bisa)", "yl")
+            except Exception as _e:
+                log(f"QR gagal: {_e}", "yl")
+        except Exception as _e:
+            log(f"QR helper error: {_e}", "yl")
         asyncio.create_task(_supervised("server_watch", server_watch))
         asyncio.create_task(_boot_and_diagnose())
         asyncio.create_task(_early_studio_guidance())

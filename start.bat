@@ -140,9 +140,9 @@ echo         Python ready!
 call :log "Python ready after winget install: %PY%"
 
 :install_deps
-REM --- 2. Install websockets --------------------------------------------------
+REM --- 2. Install websockets + qrcode (for HP QR) ---------------------------
 echo.
-echo   [2/3] Checking websockets library...
+echo   [2/3] Checking libraries...
 %PY% -c "import websockets" >nul 2>nul
 if errorlevel 1 (
     echo         Installing websockets - first time only...
@@ -160,8 +160,17 @@ if errorlevel 1 (
         exit /b 1
     )
 )
+%PY% -c "import qrcode" >nul 2>nul
+if errorlevel 1 (
+    echo         Installing qrcode ^(for HP QR code^) - first time only...
+    %PY% -m pip install --user "qrcode[pil]" pillow
+    if errorlevel 1 (
+        echo         WARNING: qrcode install failed - QR tidak akan tampil, tapi bridge tetap jalan ^(ketik URL manual^).
+        call :log "WARNING: pip install qrcode failed."
+    )
+)
 echo         OK
-call :log "websockets library OK"
+call :log "libraries OK"
 
 REM --- 3. Run the bridge ------------------------------------------------------
 echo.

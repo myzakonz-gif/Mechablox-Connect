@@ -5,8 +5,9 @@
 // User sets it in popup (ws://192.168.x.x:17613, ws://100.x.x.x:17613, wss://xxx.trycloudflare.com)
 
 const PORT = 17613;
-const DEFAULT_URL = `ws://192.168.1.73:${PORT}`; // HP 192.168.1.71 -> PC 192.168.1.73 auto
+const DEFAULT_URL = `ws://127.0.0.1:${PORT}`; // will be auto-found on HP (LAN scan), PC stays 127.0.0.1
 let URL = DEFAULT_URL;
+let autoScanning = false;
 
 // Load custom URL from storage (HP remote)
 try {
@@ -269,6 +270,52 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       case "get_bridge_url":
         sendResponse({ ok: true, url: URL, defaultUrl: DEFAULT_URL });
         break;
+      case "scan_lan": {
+        // Auto-find PC on LAN: try common IPs in parallel, first ws that opens wins
+        if (autoScanning) { sendResponse({ ok: false, error: "scan already running" }); break; }
+        autoScanning = true;
+        (async () => {
+          const candidates = [];
+          // priority: last successful + default gateway range
+          // HP 192.168.1.71 scan showed PC at .73, so try .1-.254 of same /24 plus common gateways
+          const bases = ["192.168.1", "192.168.0", "192.168.43", "192.168.18", "10.0.0"];
+          // try .73 first (known for this setup), then .1, .15, .100 etc
+          const priority = [73, 1, 15, 100, 101, 102, 254, 71];
+          for (const b of bases) for (const p of priority) candidates.push(`ws://${b}.${p}:${PORT}`);
+          // dedupe + limit 80
+          const uniq = [...new Set(candidates)].slice(0,80);
+          let found = null;
+          const tryOne = (url) => new Promise(res => {
+            try {
+              const s = new WebSocket(url);
+              const t = setTimeout(() => { try{s.close();}catch{}; res(null); }, 900);
+              s.onopen = () => { clearTimeout(t); try{s.close();}catch{}; res(url); };
+              s.onerror = () => { clearTimeout(t); res(null); };
+            } catch { res(null); }
+          });
+          // batch 12 parallel
+          for (let i=0; i<uniq.length; i+=12) {
+            const batch = uniq.slice(i,i+12);
+            const results = await Promise.all(batch.map(tryOne));
+            found = results.find(r=>r);
+            if (found) break;
+            // allow UI to update
+            try { chrome.runtime.sendMessage({type:"zs-status", scanProgress: Math.min(100, Math.round((i/uniq.length)*100))}); } catch{}
+          }
+          autoScanning = false;
+          if (found) {
+            await chrome.storage.local.set({ zsBridgeUrl: found });
+            URL = found;
+            try{ if(ws) ws.close(); }catch{}
+            reconnectDelay = RECONNECT_MIN;
+            connect();
+            sendResponse({ ok: true, url: found });
+          } else {
+            sendResponse({ ok: false, error: "PC tidak ditemukan di LAN. Pastikan PC & HP satu WiFi & bridge jalan (ws://0.0.0.0:17613)" });
+          }
+        })();
+        return true; // async
+      }
       default: sendResponse({ ok: false, error: "unknown message" });
     }
   })();
@@ -278,3 +325,16 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 chrome.runtime.onStartup.addListener(connect);
 chrome.runtime.onInstalled.addListener(connect);
 connect();
+// Auto-scan on HP if not connected after 3s (easy setup: no manual IP)
+setTimeout(() => {
+  if (!connected && !autoScanning) {
+    console.log("[zs-bg] auto-scan LAN for PC...");
+    chrome.runtime.sendMessage({type:"scan_lan"}, ()=>{});
+    // also trigger via self
+    try {
+      const candidates = ["192.168.1.73","192.168.1.15","192.168.1.100","192.168.0.1"];
+      // fire scan via message to self
+      chrome.runtime.sendMessage({type:"scan_lan"});
+    } catch {}
+  }
+}, 4000);

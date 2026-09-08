@@ -102,6 +102,68 @@ document.getElementById("resetUrl").addEventListener("click", () => {
 });
 document.getElementById("bridgeInput").addEventListener("keydown", (e) => { if (e.key === "Enter") document.getElementById("saveUrl").click(); });
 
+// Auto Find PC
+document.getElementById("autoFind").addEventListener("click", () => {
+  const btn = document.getElementById("autoFind");
+  btn.textContent = "🔍 Scanning LAN...";
+  btn.disabled = true;
+  document.getElementById("urlHelp").textContent = "Scanning 192.168.1.x / 192.168.0.x ...";
+  chrome.runtime.sendMessage({ type: "scan_lan" }, (r) => {
+    btn.textContent = "🔍 Auto Find PC";
+    btn.disabled = false;
+    if (r && r.ok) {
+      document.getElementById("bridgeInput").value = r.url;
+      document.getElementById("urlHelp").textContent = "✅ Ditemukan: " + r.url + " — saved & connecting";
+      document.getElementById("urlHelp").style.color = "#34d399";
+    } else {
+      document.getElementById("urlHelp").textContent = "❌ " + (r && r.error || "tidak ditemukan");
+      document.getElementById("urlHelp").style.color = "#fbbf24";
+    }
+    setTimeout(refresh, 800);
+  });
+});
+
+// Scan QR (camera)
+let qrStream = null;
+document.getElementById("scanQr").addEventListener("click", async () => {
+  const view = document.getElementById("qrView");
+  const video = document.getElementById("qrVideo");
+  view.style.display = "block";
+  try {
+    qrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = qrStream;
+    // Use BarcodeDetector if available (Chrome 83+), fallback to jsQR CDNs not bundled — simple: try native
+    const scan = async () => {
+      if (!qrStream) return;
+      try {
+        if ('BarcodeDetector' in window) {
+          const detector = new BarcodeDetector({ formats: ['qr_code'] });
+          const codes = await detector.detect(video);
+          if (codes.length) {
+            const val = codes[0].rawValue.trim();
+            if (val.startsWith("ws://") || val.startsWith("wss://")) {
+              document.getElementById("bridgeInput").value = val;
+              document.getElementById("qrView").style.display = "none";
+              if (qrStream) { qrStream.getTracks().forEach(t=>t.stop()); qrStream=null; }
+              document.getElementById("saveUrl").click();
+              return;
+            }
+          }
+        }
+      } catch {}
+      requestAnimationFrame(scan);
+    };
+    scan();
+  } catch (e) {
+    alert("Kamera gagal: " + e.message + "\nKetik manual atau Auto Find.");
+    view.style.display = "none";
+  }
+});
+document.getElementById("qrClose").addEventListener("click", () => {
+  document.getElementById("qrView").style.display = "none";
+  if (qrStream) { qrStream.getTracks().forEach(t=>t.stop()); qrStream=null; }
+});
+
 chrome.runtime.onMessage.addListener((msg) => { if (msg && msg.type === "zs-status") render(msg); });
 refresh();
 setInterval(refresh, 2000);
