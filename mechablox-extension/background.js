@@ -5,7 +5,7 @@
 // User sets it in popup (ws://192.168.x.x:17613, ws://100.x.x.x:17613, wss://xxx.trycloudflare.com)
 
 const PORT = 17613;
-const DEFAULT_URL = `ws://127.0.0.1:${PORT}`;
+const DEFAULT_URL = `ws://192.168.1.73:${PORT}`; // HP 192.168.1.71 -> PC 192.168.1.73 auto
 let URL = DEFAULT_URL;
 
 // Load custom URL from storage (HP remote)
